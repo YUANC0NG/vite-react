@@ -7,4 +7,23 @@ export default defineConfig({
     outDir: 'dist',
   },
   plugins: [react()],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://data.gateapi.io',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        headers: {
+          'User-Agent': 'CoinWatch-App/1.0'
+        }
+      },
+      '/proxy': {
+        target: 'https://data.gateapi.io',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/proxy/, '')
+      }
+    }
+  }
 })

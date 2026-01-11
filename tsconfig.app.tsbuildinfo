@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts"],"version":"5.8.3"}
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/api/client.ts","./src/api/coingecko.ts","./src/api/gate.ts","./src/components/coinrow.tsx","./src/components/header.tsx","./src/components/tabheader.tsx","./src/hooks/usecoindata.ts","./src/pages/marketpage.tsx","./src/stores/usestore.ts","./src/types/index.ts","./src/utils/cn.ts"],"version":"5.8.3"}

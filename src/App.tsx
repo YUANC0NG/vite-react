@@ -1,34 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect } from 'react';
+import { MarketPage } from './pages/MarketPage'
+import { SettingsPage } from './pages/SettingsPage'
+import { useStore } from './stores/useStore'
+import { TrendingUp, Settings } from 'lucide-react'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { activeTab, setActiveTab, colorScheme } = useStore();
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-color-scheme', colorScheme);
+  }, [colorScheme]);
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="h-screen w-screen overflow-hidden flex flex-col bg-background">
+      <div className="flex-1 overflow-hidden">
+        {activeTab === 'market' ? <MarketPage /> : <SettingsPage />}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+
+      <nav className="h-14 bg-card border-t border-border flex items-center justify-around z-40">
+        <button
+          onClick={() => setActiveTab('market')}
+          className={`flex flex-col items-center gap-1 flex-1 py-1 transition-colors ${activeTab === 'market' ? 'text-rise' : 'text-text-secondary'
+            }`}
+        >
+          <TrendingUp size={20} />
+          <span className="text-[10px] font-medium">行情</span>
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+        <button
+          onClick={() => setActiveTab('settings')}
+          className={`flex flex-col items-center gap-1 flex-1 py-1 transition-colors ${activeTab === 'settings' ? 'text-rise' : 'text-text-secondary'
+            }`}
+        >
+          <Settings size={20} />
+          <span className="text-[10px] font-medium">设置</span>
+        </button>
+      </nav>
+    </div>
   )
 }
 
