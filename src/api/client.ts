@@ -1,5 +1,4 @@
-import { config } from './config';
-import { getCorsProxy, checkCorsSupport } from './cors';
+import { getCorsProxy } from './cors';
 
 // 通用API客户端
 export class ApiClient {
@@ -55,9 +54,9 @@ export class ApiClient {
   }
 
   private async directFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const headers = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...options.headers as Record<string, string>,
     };
 
     if (import.meta.env.PROD) {
