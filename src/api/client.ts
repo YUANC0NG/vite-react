@@ -1,9 +1,8 @@
-import { getCorsProxy, getProxyList } from './cors';
+import { getProxyList } from './cors';
 
 // 通用API客户端
 export class ApiClient {
   private baseURL: string;
-  private useCorsProxy: boolean = false;
 
   constructor(baseURL: string = '') {
     // 根据环境选择正确的baseURL
