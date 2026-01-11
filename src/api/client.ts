@@ -1,4 +1,4 @@
-import { getCorsProxy } from './cors';
+import { getCorsProxy, getProxyList } from './cors';
 
 // 通用API客户端
 export class ApiClient {
@@ -35,15 +35,9 @@ export class ApiClient {
 
   async get<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     try {
-      // 生产环境尝试直接请求，如果失败则使用CORS代理
-      if (import.meta.env.PROD && !this.useCorsProxy) {
-        try {
-          return await this.directFetch<T>(endpoint, options);
-        } catch (corsError) {
-          console.warn('Direct API request failed, trying with CORS proxy:', corsError);
-          this.useCorsProxy = true;
-          return await this.proxyFetch<T>(endpoint, options);
-        }
+      // 生产环境直接使用CORS代理
+      if (import.meta.env.PROD) {
+        return await this.proxyFetch<T>(endpoint, options);
       }
       
       return await this.directFetch<T>(endpoint, options);
@@ -76,22 +70,32 @@ export class ApiClient {
   }
 
   private async proxyFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const corsProxy = getCorsProxy();
     const targetUrl = `${this.baseURL}${endpoint}`;
+    const proxyList = getProxyList();
     
-    const response = await fetch(`${corsProxy}${encodeURIComponent(targetUrl)}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Proxy request failed! status: ${response.status}`);
+    // 尝试多个代理直到成功
+    for (const proxy of proxyList) {
+      try {
+        const response = await fetch(`${proxy}${encodeURIComponent(targetUrl)}`, {
+          ...options,
+          headers: {
+            'Content-Type': 'application/json',
+            ...options.headers,
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Proxy request failed! status: ${response.status}`);
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.warn(`Proxy ${proxy} failed, trying next...`, error);
+        continue;
+      }
     }
     
-    return await response.json();
+    throw new Error('All proxy attempts failed');
   }
 
   async post<T>(endpoint: string, data?: any): Promise<T> {
