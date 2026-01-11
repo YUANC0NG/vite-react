@@ -138,7 +138,7 @@ export const MarketPage: React.FC = () => {
 
     const isSearchMode = !!searchQuery;
 
-    const renderItem = (index: number, coin: any) => {
+    const renderItem = (_index: number, coin: any) => {
         if (!coin) return null;
         const isFavorite = favorites.includes(coin.symbol);
 
